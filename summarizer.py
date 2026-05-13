@@ -8,10 +8,9 @@ load_dotenv()
 
 DATA_FILE = Path(__file__).parent / "data" / "news.json"
 
-client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
-
 
 def summarize_article(title: str, content: str) -> str:
+    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
     message = client.messages.create(
         model="claude-haiku-4-5-20251001",
         max_tokens=300,
