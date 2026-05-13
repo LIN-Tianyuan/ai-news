@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import threading
 from pathlib import Path
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -74,11 +75,8 @@ def api_articles():
 
 @app.route("/api/update", methods=["POST"])
 def api_update():
-    from scraper import scrape_all
-    from summarizer import summarize_pending
-    new = scrape_all()
-    summarize_pending()
-    return jsonify({"status": "ok", "new_articles": len(new)})
+    threading.Thread(target=update_job, daemon=True).start()
+    return jsonify({"status": "started"})
 
 
 def start_scheduler():
@@ -89,12 +87,10 @@ def start_scheduler():
     return scheduler
 
 
-# 启动时立即跑一次（如果还没有数据）并开启定时器
-# gunicorn 和直接运行都会执行这里
 start_scheduler()
 if not DATA_FILE.exists():
-    log.info("首次启动，立即抓取数据...")
-    update_job()
+    log.info("首次启动，后台抓取数据...")
+    threading.Thread(target=update_job, daemon=True).start()
 
 
 if __name__ == "__main__":
