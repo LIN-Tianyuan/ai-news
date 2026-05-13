@@ -1,0 +1,14 @@
+# 环境
+venv/
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# 数据（本地缓存，不提交）
+data/
+
+# 系统
+.DS_Store
